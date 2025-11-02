@@ -39,15 +39,13 @@ chmod +x start.sh
 | `PROXIED`         | false   | Enable if behind a proxy          | 'true'        |
 | `LOG_LEVEL`       | INFO    | Logging level (DEBUG, INFO, WARN, ERROR) | DEBUG         |
 
-// mention about render.yaml, railway.toml and fly.toml in here
-
 ## ☁️ Deployment
 
 You can deploy the PeerJS server to various cloud platforms. Below are example configuration files for some popular services:
 
-- **Railway**: See [railway.toml](railway.toml) for configuration.
-- **Fly.io**: See [fly.toml](fly.toml) for configuration.
-- **Render**: See [render.yaml](render.yaml) for configuration.
+- **[Railway](https://railway.app/)**: See [railway.toml](railway.toml) for configuration.
+- **[Fly.io](https://fly.io/)**: See [fly.toml](fly.toml) for configuration.
+- **[Render](https://render.com/)**: See [render.yaml](render.yaml) for configuration.
 
 ## 📚 Resources
 
