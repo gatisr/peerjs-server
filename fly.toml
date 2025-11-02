@@ -1,27 +1,23 @@
-app = "peerjs-server"
-primary_region = "ams"
+# fly.toml app configuration file generated for peerjs-server on 2025-11-02T12:19:58Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'peerjs-server'
+primary_region = 'ams'
 
 [build]
 
 [http_service]
-  internal_port = 9000
+  internal_port = 3000
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-
-[[http_service.checks]]
-  interval = "15s"
-  timeout = "10s"
-  grace_period = "30s"
-  method = "GET"
-  path = "/peerjs"
-
-[env]
-  PROXIED = "true"
-  PEERJS_PATH = "/peerjs"
+  processes = ['app']
 
 [[vm]]
-  memory = "256mb"
-  cpu_kind = "shared"
+  memory = '256mb'
+  cpu_kind = 'shared'
   cpus = 1
+  memory_mb = 256
