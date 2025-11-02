@@ -14,7 +14,3 @@ value = "true"
 [[deploy.environmentVariables]]
 name = "PEERJS_PATH"
 value = "/peerjs"
-
-[[deploy.environmentVariables]]
-name = "PORT"
-value = "65535"
