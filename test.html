@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PeerJS Server Test</title>
+  <script src="https://unpkg.com/peerjs@1.5.0/dist/peerjs.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .status {
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+
+    .connecting {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .connected {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .info {
+      background: #e7f3ff;
+      padding: 15px;
+      border-left: 4px solid #2196F3;
+      margin: 20px 0;
+    }
+
+    .warning {
+      background: #fff3cd;
+      padding: 15px;
+      border-left: 4px solid #ffc107;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .warning.show {
+      display: block;
+    }
+
+    #peer-id {
+      font-family: monospace;
+      font-size: 18px;
+      color: #2196F3;
+    }
+
+    #logs {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 5px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      margin-top: 20px;
+    }
+
+    .log-entry {
+      margin: 5px 0;
+      padding: 2px 0;
+    }
+
+    .log-success {
+      color: #4ec9b0;
+    }
+
+    .log-error {
+      color: #f48771;
+    }
+
+    .log-info {
+      color: #9cdcfe;
+    }
+
+    button {
+      background: #2196F3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #1976D2;
+    }
+
+    .controls {
+      margin: 20px 0;
+    }
+
+    .config-panel {
+      background: #f0f8ff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(33, 150, 243, 0.08);
+    }
+
+    .config-row {
+      margin: 10px 0;
+    }
+
+    .config-panel label {
+      display: inline-block;
+      width: 100px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .config-panel input[type="text"],
+    .config-panel input[type="number"] {
+      width: 250px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-family: monospace;
+    }
+
+    .config-panel input[type="checkbox"] {
+      width: auto;
+      margin-left: 0;
+    }
+
+    .server-info {
+      background: #e8f5e9;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🔗 PeerJS Server Connection Test</h1>
+    <p class="subtitle">Testing connection to your PeerJS server instance.</p>
+    <div class="config-panel">
+      <h3>Server Configuration</h3>
+      <div class="config-row">
+        <label for="host">Host:</label>
+        <input type="text" id="host" value="${PEERJS_HOST}">
+      </div>
+      <div class="config-row">
+        <label for="port">Port:</label>
+        <input type="number" id="port" value="${PORT}">
+      </div>
+      <div class="config-row">
+        <label for="path">Path:</label>
+        <input type="text" id="path" value="${PEERJS_PATH}">
+      </div>
+      <div class="config-row">
+        <label for="key">Key:</label>
+        <input type="text" id="key" value="${KEY}">
+      </div>
+      <div class="config-row">
+        <label for="secure">Secure (HTTPS):</label>
+        <input type="checkbox" id="secure">
+      </div>
+    </div>
+
+    <div class="server-info">
+      <strong>Server URL:</strong> <span id="server-url">-</span><br>
+      <strong>WebSocket URL:</strong> <span id="ws-url">-</span>
+    </div>
+
+    <div id="status" class="status connecting">
+      📡 Initializing...
+    </div>
+
+    <div class="info">
+      <strong>Your Peer ID:</strong> <span id="peer-id">-</span>
+    </div>
+
+    <div class="controls">
+      <button onclick="reconnect()">🔄 Reconnect</button>
+      <button onclick="clearLogs()">🗑️ Clear Logs</button>
+      <button onclick="testHttpEndpoint()">🧪 Test HTTP</button>
+      <button onclick="testGetId()">🆔 Get New ID</button>
+    </div>
+
+    <h3>📋 Console Logs:</h3>
+    <div id="logs"></div>
+  </div>
+
+  <script>
+    let peer = null;
+    let logsContainer = document.getElementById('logs');
+
+    // Configuration
+    let CONFIG = {
+      host: document.getElementById('host').value,
+      port: parseInt(document.getElementById('port').value),
+      path: document.getElementById('path').value,
+      key: document.getElementById('key').value,
+      secure: document.getElementById('secure').checked,
+      debug: 3
+    };
+
+    function addLog(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = document.createElement('div');
+      logEntry.className = `log-entry log-${type}`;
+      logEntry.textContent = `[${timestamp}] ${message}`;
+      logsContainer.appendChild(logEntry);
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+    }
+
+    function updateStatus(message, className) {
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = message;
+      statusEl.className = `status ${className}`;
+    }
+
+    function clearLogs() {
+      logsContainer.innerHTML = '';
+      addLog('Logs cleared', 'info');
+    }
+
+    function getServerUrl() {
+      return `${CONFIG.secure ? 'https' : 'http'}://${CONFIG.host}:${CONFIG.port}`;
+    }
+
+    function getWebSocketUrl() {
+      return `${CONFIG.secure ? 'wss' : 'ws'}://${CONFIG.host}:${CONFIG.port}${CONFIG.path}`;
+    }
+
+    function updateUrls() {
+      document.getElementById('server-url').textContent = getServerUrl() + CONFIG.path;
+      document.getElementById('ws-url').textContent = getWebSocketUrl();
+    }
+
+    function testHttpEndpoint() {
+      addLog('Testing HTTP endpoint...', 'info');
+      const url = `${getServerUrl()}${CONFIG.path}`;
+      addLog(`Fetching: ${url}`, 'info');
+
+      fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache'
+      })
+        .then(response => {
+          addLog(`HTTP Status: ${response.status}`, response.ok ? 'success' : 'error');
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          addLog(`✅ Server responded: ${JSON.stringify(data, null, 2)}`, 'success');
+        })
+        .catch(err => {
+          addLog(`❌ HTTP test failed: ${err.message}`, 'error');
+          if (err.message.includes('CORS') || err.message.includes('Failed to fetch')) {
+            addLog('💡 This is a CORS error - use a web server to host this test page', 'error');
+          }
+        });
+    }
+
+    function testGetId() {
+      addLog('Testing Get ID endpoint...', 'info');
+      const url = `${getServerUrl()}${CONFIG.path}/${CONFIG.key}/id`;
+      addLog(`Fetching: ${url}`, 'info');
+
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          return response.text();
+        })
+        .then(id => {
+          addLog(`✅ Generated ID: ${id}`, 'success');
+        })
+        .catch(err => {
+          addLog(`❌ Get ID failed: ${err.message}`, 'error');
+        });
+    }
+
+    function initPeer() {
+      addLog('Initializing PeerJS connection...', 'info');
+      addLog(`Config: host=${CONFIG.host}, port=${CONFIG.port}, path=${CONFIG.path}, key=${CONFIG.key}`, 'info');
+
+      try {
+        peer = new Peer({
+          host: CONFIG.host,
+          port: CONFIG.port,
+          path: CONFIG.path,
+          key: CONFIG.key,
+          secure: CONFIG.secure,
+          debug: CONFIG.debug,
+          config: {
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' }
+            ]
+          }
+        });
+
+        peer.on('open', (id) => {
+          document.getElementById('peer-id').textContent = id;
+          updateStatus('✅ Connected to PeerJS server', 'connected');
+          addLog(`✅ Connected successfully!`, 'success');
+          addLog(`✅ Your Peer ID: ${id}`, 'success');
+          addLog(`🎉 Server is working correctly!`, 'success');
+        });
+
+        peer.on('connection', (conn) => {
+          addLog(`📞 Incoming connection from: ${conn.peer}`, 'info');
+
+          conn.on('open', () => {
+            addLog(`✅ Connection with ${conn.peer} established`, 'success');
+          });
+
+          conn.on('data', (data) => {
+            addLog(`📨 Data received: ${JSON.stringify(data)}`, 'info');
+          });
+
+          conn.on('close', () => {
+            addLog(`Connection with ${conn.peer} closed`, 'info');
+          });
+        });
+
+        peer.on('error', (err) => {
+          updateStatus(`❌ Error: ${err.type}`, 'error');
+          addLog(`❌ PeerJS Error [${err.type}]: ${err.message}`, 'error');
+
+          if (err.type === 'network') {
+            addLog('💡 Network error - is the server running and accessible?', 'info');
+          } else if (err.type === 'server-error') {
+            addLog('💡 Server error - check server logs', 'info');
+          } else if (err.type === 'socket-error') {
+            addLog('💡 WebSocket error - check CORS and firewall settings', 'info');
+          } else if (err.type === 'unavailable-id') {
+            addLog('💡 ID already taken', 'info');
+          } else if (err.type === 'invalid-key') {
+            addLog('💡 Invalid API key - check your KEY configuration', 'error');
+          }
+
+          console.error('Full error object:', err);
+        });
+
+        peer.on('disconnected', () => {
+          updateStatus('⚠️ Disconnected from server', 'connecting');
+          addLog('⚠️ Disconnected from server', 'error');
+        });
+
+        peer.on('close', () => {
+          updateStatus('🔌 Connection closed', 'error');
+          addLog('🔌 Peer connection closed', 'error');
+        });
+
+      } catch (err) {
+        addLog(`❌ Failed to initialize: ${err.message}`, 'error');
+        updateStatus('❌ Initialization failed', 'error');
+      }
+    }
+
+    function reconnect() {
+      if (peer) {
+        addLog('Destroying existing peer connection...', 'info');
+        peer.destroy();
+        peer = null;
+      }
+
+      // Update config from inputs
+      CONFIG.host = document.getElementById('host').value;
+      CONFIG.port = parseInt(document.getElementById('port').value);
+      CONFIG.path = document.getElementById('path').value;
+      CONFIG.key = document.getElementById('key').value;
+      CONFIG.secure = document.getElementById('secure').checked;
+
+      updateUrls();
+
+      setTimeout(() => {
+        initPeer();
+      }, 500);
+    }
+
+    // Initialize on load
+    window.onload = () => {
+      addLog('=== PeerJS Connection Test Started ===', 'info');
+      addLog(`Browser: ${navigator.userAgent}`, 'info');
+      addLog(`User Agent: ${navigator.userAgent.split(' ').pop()}`, 'info');
+
+      updateUrls();
+    };
+  </script>
+</body>
+
+</html>

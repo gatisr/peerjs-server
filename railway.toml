@@ -1,0 +1,16 @@
+[build]
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "node server.js"
+healthcheckPath = "/peerjs"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+[[deploy.environmentVariables]]
+name = "PROXIED"
+value = "true"
+
+[[deploy.environmentVariables]]
+name = "PEERJS_PATH"
+value = "/peerjs"

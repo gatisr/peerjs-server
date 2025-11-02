@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: peerjs-server
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt
+    healthCheckPath: /peerjs
+    envVars:
+      - key: PORT
+        fromService:
+          type: web
+          name: peerjs-server
+          envVarKey: PORT
+      - key: PROXIED
+        value: "true"
+      - key: PEERJS_PATH
+        value: "/peerjs"
