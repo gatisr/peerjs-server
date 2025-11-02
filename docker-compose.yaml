@@ -14,8 +14,12 @@ services:
       - ALLOW_DISCOVERY=${ALLOW_DISCOVERY:-true}
       - CORS_ORIGINS=${CORS_ORIGINS:-*}
       - USE_CREDENTIALS=${USE_CREDENTIALS:-false}
+      - VERIFY_WS_ORIGIN=${VERIFY_WS_ORIGIN:-true}
       - PROXIED=${PROXIED:-false}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENABLE_RATE_LIMIT=${ENABLE_RATE_LIMIT:-false}
+      - MAX_CONNECTIONS_PER_IP=${MAX_CONNECTIONS_PER_IP:-50}
+      - CONNECTION_TIMEOUT=${CONNECTION_TIMEOUT:-300000}
       
     restart: unless-stopped
     

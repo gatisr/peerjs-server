@@ -36,8 +36,12 @@ chmod +x start.sh
 | `CORS_ORIGINS`    | *       | CORS allowed origins              | '<https://example.com>, <https://another.com>' |
 | `KEY`             | peerjs  | Default API key                   | 'myapp'       |
 | `USE_CREDENTIALS` | false   | Use credentials for connections   | 'true'        |
+| `VERIFY_WS_ORIGIN` | true    | Verify WebSocket origin header    | 'false'       |
 | `PROXIED`         | false   | Enable if behind a proxy          | 'true'        |
 | `LOG_LEVEL`       | INFO    | Logging level (DEBUG, INFO, WARN, ERROR) | DEBUG         |
+| `ENABLE_RATE_LIMIT` | false   | Enable rate limiting              | 'true'        |
+| `MAX_CONNECTIONS_PER_IP` | 50       | Max connections per IP (0 = unlimited) | 10            |
+| `CONNECTION_TIMEOUT_MS` | 300000   | Connection timeout in ms          | 120000        |
 
 ## ☁️ Deployment
 

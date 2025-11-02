@@ -31,6 +31,7 @@ sed -e "s|\${PEERJS_HOST}|${PEERJS_HOST:-localhost}|g" \
     -e "s|\${ALLOW_DISCOVERY}|${ALLOW_DISCOVERY:-true}|g" \
     -e "s|\${CORS_ORIGINS}|${CORS_ORIGINS:-*}|g" \
     -e "s|\${USE_CREDENTIALS}|${USE_CREDENTIALS:-false}|g" \
+    -e "s|\${VERIFY_WS_ORIGIN}|${VERIFY_WS_ORIGIN:-true}|g" \
     -e "s|\${PROXIED}|${PROXIED:--false}|g" \
     -e "s|\${LOG_LEVEL}|${LOG_LEVEL:-INFO}|g" \
     test.html > test.generated.html
