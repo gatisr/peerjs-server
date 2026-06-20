@@ -81,11 +81,12 @@ You can deploy the PeerJS server to various cloud platforms. Below are example c
     - `MAX_CONNECTIONS_PER_IP` variable to set the maximum connections per IP.
     - `CONNECTION_TIMEOUT_MS` variable to set the connection timeout in milliseconds.
 
+> Add monitoring via https://dashboard.uptimerobot.com/ to prevent server sleep and detect crashes. Platforms like Render put inactive services to sleep after some time, causing a cold start (~30–60s) on the first request. In some cases, the server may crash and not recover automatically, requiring a manual restart from the admin panel.
+
 ## 📚 Resources
 
 - [PeerJS Documentation](https://peerjs.com/docs/)
 - [PeerJS Server GitHub](https://github.com/peers/peerjs-server)
-- [Docker Hub Image](https://hub.docker.com/r/peerjs/peerjs-server)
 
 ## 📄 License
 
